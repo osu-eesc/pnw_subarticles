@@ -167,7 +167,6 @@ function pnw_subarticles_field_default_fields() {
         'settings' => array(),
         'type' => 'options_select',
         'weight' => '3',
-<<<<<<< HEAD
       ),
     ),
   );
@@ -244,8 +243,6 @@ function pnw_subarticles_field_default_fields() {
         ),
         'type' => 'text_textfield',
         'weight' => '1',
-=======
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
       ),
     ),
   );

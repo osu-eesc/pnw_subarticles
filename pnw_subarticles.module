@@ -42,23 +42,13 @@ function pnw_subarticles_admin_settings() {
     '#options' => $options,
     '#description' => t('Choose the parent article that the sub-articles should reference.'),
     '#required' => TRUE,
-<<<<<<< HEAD
   );
-=======
-  ); 
-
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
   $form['content'] = array(
     '#type' => 'textarea',
     '#title' => t('Body'),
     '#description' => t('Copy and paste InDesign exported html. Titles need to be wrapped in h3 tags'),
     '#required' => TRUE,
-<<<<<<< HEAD
   );
-=======
-  ); 
-
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Update sub-pages'),
@@ -96,17 +86,14 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
   
   module_load_include('inc', 'node', 'node.pages');
 
-<<<<<<< HEAD
   $text = $form_state['values']['content'];
   $parentid = $form_state['values']['parentid'];
   //$styled_title = $form_state['values']['parentid'];
-=======
-  $text = $form_state['values']['content'];  
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
   $text = str_replace(array("\xe2\x80\x98", "\xe2\x80\x99", "\xe2\x80\x9c", "\xe2\x80\x9d", "\xe2\x80\x93", "\xe2\x80\x94", "\xe2\x80\xa6"), array("'", "'", '"', '"', '-', '-', '&hellip;'), $text);
   $text = str_replace(array(chr(145), chr(146), chr(147), chr(148), chr(150), chr(151), chr(133)), array("'", "'", '"', '"', '-', '-', '&hellip;'), $text);
   $text = str_replace('&nbsp;', ' ', $text);
   $text = trim($text);
+  
 
   $handbook_data = split_text($text);
 
@@ -121,17 +108,10 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
   //if (!empty($existing_nodes)) {
 
     foreach ($handbook_data as $new_content) {
-<<<<<<< HEAD
       $new_titles[] = strip_tags(trim($new_content['title']));
       $new_content['parentid'] = $parentid;
       $new_content['styled_title'] = $new_content['title']; 
       if (in_array(strip_tags(trim($new_content['title'])), $existing_nodes)) {
-=======
-      $new_titles[] = strip_tags($new_content['title']);
-      $new_content['parentid'] = $parentid; 
-      $new_content['styled_title'] = $new_content['title']; 
-      if (in_array(strip_tags($new_content['title']), $existing_nodes)) {
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
         $update_handbook_data[] = $new_content;
       }
       else {
@@ -160,14 +140,8 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
         $result = $query->execute();
 
         $nid = array_keys($result['node']); // sets the nid to the current value in loop
-<<<<<<< HEAD
         
         $nid = $nid[0]; // Drupal needs this to be a string
-=======
-
-        // Drupal creates error if $nid is in an array 
-        $nid = extract($nid);
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
 
         $node = node_load($nid); // load the node
 
@@ -199,18 +173,14 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
 
         node_object_prepare($node);
 
-        // set the new values
+        // set tne new values
         $node->type = 'subarticle';
         $node->field_body[LANGUAGE_NONE][0]['value'] = $update_content['body'];
-        $node->field_body[LANGUAGE_NONE][0]['format'] = 'full_html';
         $node->field_parent_article_reference[LANGUAGE_NONE][0]['nid'] = $update_content['parentid'];
         $node->field_styled_title[LANGUAGE_NONE][0]['value'] = $update_content['styled_title'];
         $node->field_styled_title[LANGUAGE_NONE][0]['format'] = 'styled_page_title';
         $node->revision = 1;
-<<<<<<< HEAD
         //$node->revision_uid = 1;
-=======
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
         $node->log = 'This node was updated via pnw_subarticles module at ' . date('c');
 
         if ($node = node_submit($node)) {
@@ -263,11 +233,7 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
       $node->field_body[LANGUAGE_NONE][0]['value'] = $new_content['body'];
       $node->field_body[LANGUAGE_NONE][0]['format'] = 'full_html';
       $node->field_parent_article_reference[LANGUAGE_NONE][0]['nid'] = $new_content['parentid'];
-<<<<<<< HEAD
       $node->field_styled_title[LANGUAGE_NONE][0]['value'] = $new_content['styled_title'];
-=======
-      $node->field_styled_title[LANGUAGE_NONE][0]['value'] = $update_content['styled_title'];
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
       $node->field_styled_title[LANGUAGE_NONE][0]['format'] = 'styled_page_title';
       $node->log = 'This node was created via pnw_subarticles module at ' . date('c');
 
@@ -332,11 +298,7 @@ function split_text($text) {
       $text = substr($text, strpos($text, $matches['0']));
       $section[] = $first_section;
       $count = 1;
-<<<<<<< HEAD
     }
-=======
-    } 
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
     elseif ($matches['2'] == "") { //If $text starts with <h3></h3>
       $first_section['title'] = "Page 1";
       $first_section['parentid'] = $parentid;
@@ -345,11 +307,7 @@ function split_text($text) {
       if (isset($matches['0'])) {
         $first_section['body'] = substr($text, 0, strpos($text, $matches['0']));
         $text = substr($text, strpos($text, $matches['0']));
-<<<<<<< HEAD
       }
-=======
-      } 
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
       else {
         $first_section['body'] = $text;
         $text = '';
@@ -369,11 +327,7 @@ function split_text($text) {
       if (isset($matches['0'])) {
         $new_section['body'] = substr($text, 0, strpos($text, $matches['0']));
         $text = substr($text, strpos($text, $matches['0']));
-<<<<<<< HEAD
       }
-=======
-      } 
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
       else {
         $new_section['body'] = $text;
         $text = '';

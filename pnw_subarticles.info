@@ -3,11 +3,7 @@ description = For creating/updating node-referenced subarticles
 core = 7.x
 package = PNW
 php = 5.2.4
-<<<<<<< HEAD
 version = 7.x-1.0
-=======
-version = 7.x-1.0-beta1
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
 project = pnw_subarticles
 dependencies[] = ctools
 dependencies[] = ds
@@ -37,7 +33,3 @@ features[variable][] = node_submitted_subarticle
 features[variable][] = pathauto_node_subarticle_pattern
 features[variable][] = save_continue_subarticles
 features[views_view][] = article_subpages
-<<<<<<< HEAD
-=======
-stylesheets[all][] = theme/pnw_subarticles.css
->>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
