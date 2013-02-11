@@ -1,0 +1,43 @@
+name = PNW Subarticles
+description = For creating/updating node-referenced subarticles
+core = 7.x
+package = PNW
+php = 5.2.4
+<<<<<<< HEAD
+version = 7.x-1.0
+=======
+version = 7.x-1.0-beta1
+>>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
+project = pnw_subarticles
+dependencies[] = ctools
+dependencies[] = ds
+dependencies[] = features
+dependencies[] = node_reference
+dependencies[] = options
+dependencies[] = strongarm
+dependencies[] = views
+features[ctools][] = ds:ds:1
+features[ctools][] = strongarm:strongarm:1
+features[ctools][] = views:views_default:3.0
+features[ds_field_settings][] = node|subarticle|default
+features[ds_layout_settings][] = node|subarticle|default
+features[features_api][] = api:1
+features[field][] = node-subarticle-field_body
+features[field][] = node-subarticle-field_parent_article_reference
+features[field][] = node-subarticle-field_styled_title
+features[node][] = subarticle
+features[variable][] = diff_enable_revisions_page_node_subarticle
+features[variable][] = diff_view_mode_preview_node_subarticle
+features[variable][] = field_bundle_settings_node__subarticle
+features[variable][] = menu_options_subarticle
+features[variable][] = menu_parent_subarticle
+features[variable][] = node_options_subarticle
+features[variable][] = node_preview_subarticle
+features[variable][] = node_submitted_subarticle
+features[variable][] = pathauto_node_subarticle_pattern
+features[variable][] = save_continue_subarticles
+features[views_view][] = article_subpages
+<<<<<<< HEAD
+=======
+stylesheets[all][] = theme/pnw_subarticles.css
+>>>>>>> aaeb07b13fa6f08805de904805ace2e371167c3e
