@@ -60,6 +60,9 @@ function pnw_subarticles_strongarm() {
       'test' => array(
         'custom_settings' => FALSE,
       ),
+      'colorbox_node' => array(
+        'custom_settings' => FALSE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
@@ -73,7 +76,24 @@ function pnw_subarticles_strongarm() {
           'weight' => '4',
         ),
       ),
-      'display' => array(),
+      'display' => array(
+        'handbook_images_related_image' => array(
+          'full' => array(
+            'weight' => '1',
+            'visible' => TRUE,
+          ),
+        ),
+        'related_images_related_image' => array(
+          'default' => array(
+            'weight' => '1',
+            'visible' => TRUE,
+          ),
+          'full' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+        ),
+      ),
     ),
   );
   $export['field_bundle_settings_node__subarticle'] = $strongarm;
