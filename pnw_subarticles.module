@@ -97,38 +97,38 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
 
   $handbook_data = split_text($text);
 
-  // Load existing nodes
-  //$results = db_query("SELECT nid, title FROM {node} WHERE type IN ('article', 'page', 'subarticle', 'pdf') ORDER BY title");
+  // Load all existing nodes, these are used for see-also links
+  $allresults = db_query("SELECT nid, title FROM {node} WHERE type IN ('article', 'page', 'subarticle', 'pdf') ORDER BY title");
+
+  // load all nodes that that the parent nid
   $results = db_query("SELECT n.nid, n.title FROM {node} n, {field_data_field_parent_article_reference} p WHERE  n.nid = p.entity_id AND p.field_parent_article_reference_nid = " . $form_state['values']['parentid'] . "  ORDER BY n.title");
 
   //dpm($results,'results query');
 
-  $existing_nodes = array();
-
-  $rowCount = 0;
+  $existing_nodes = array(); // this limits updates to nodes with same parent_id
   foreach ($results as $result) {
     $existing_nodes[$result->nid] = $result->title;
-    $rowCount++;
   }
 
+  $all_nodes = array(); // this is used for see also's
+  foreach ($allresults as $result) {
+    $all_nodes[$result->nid] = $result->title;
+  }
 
-  //dpm($rowCount,'rows in line 101');
-  //dpm($rowCount,'rows in line 102');
-
-  //if (!empty($existing_nodes)) {
+  //dpm($handbook_data, 'handbook data');
 
     foreach ($handbook_data as $new_content) {
       $new_titles[] = strip_tags(trim($new_content['title']));
       $new_content['parentid'] = $parentid;
       $new_content['styled_title'] = $new_content['title']; 
-      $crop = explode('-',$new_content['title']); // seaparate out the crop name from title
-      $new_content['crop'] = $crop[0]; 
-      $new_content['pest'] = $crop[1]; 
+
       if (in_array(strip_tags(trim($new_content['title'])), $existing_nodes)) {
         $update_handbook_data[] = $new_content;
+        //dpm($update_handbook_data, 'update_handbook_data');
       }
       else {
         $new_handbook_data[] = $new_content;
+         //dpm($new_handbook_data, 'new_handbook_data');
       }
     } // foreach
   
@@ -138,83 +138,95 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
 
       // Update a node
       foreach ($update_handbook_data as $update_content) {
-        $query = "SELECT n.nid FROM {node} n, {field_data_field_parent_article_reference} p WHERE n.nid = p.entity_id AND n.type = 'subarticle' AND n.title = '" . strip_tags($update_content['title']) . "'";
+        //$query = "SELECT n.nid FROM {node} n, {field_data_field_parent_article_reference} p WHERE n.nid = p.entity_id AND n.type = 'subarticle' AND n.title = '" . strip_tags($update_content['title']) . "'";
+        $query = "SELECT n.nid FROM {node} n, {field_data_field_parent_article_reference} p WHERE n.nid = p.entity_id AND n.type = 'subarticle' AND p. field_parent_article_reference_nid = " . $form_state['values']['parentid'] . " AND n.title = '" . strip_tags($update_content['title']) . "'";
+        
 
         $result = db_query($query)->fetchField();
+
+        
       
-        $query = new EntityFieldQuery();
+          $query = new EntityFieldQuery();
 
-        $query
-        ->entityCondition('entity_type', 'node')
-        ->entityCondition('bundle', 'subarticle')
-        ->propertyCondition('nid', $result)
-        ->range(0, 1);
+          $query
+          ->entityCondition('entity_type', 'node')
+          ->entityCondition('bundle', 'subarticle')
+          ->propertyCondition('nid', $result) 
+          ->range(0, 1);
        
-        $result = $query->execute();
+          $result = $query->execute();
 
-        $nid = array_keys($result['node']); // sets the nid to the current value in loop
+          //dpm($result, 'update result');
+
+          //if ($nid > 0) { // don't try to update if node isn't found
+
+          $nid = array_keys($result['node']); // sets the nid to the current value in loop
         
-        $nid = $nid[0]; // Drupal needs this to be a string
+          $nid = $nid[0]; // Drupal needs this to be a string
 
-        $node = node_load($nid); // load the node
+          $node = node_load($nid); // load the node
 
-        // add see also links if match
-        $pattern = '/(?<=<p class="See-also-link">)(.*?)(?=<\/p>)/';
-        preg_match_all($pattern, $update_content['body'], $matches);
+          // add see also links if match
+          $pattern = '/(?<=<p class="See-also-link">)(.*?)(?=<\/p>)/';
+          preg_match_all($pattern, $update_content['body'], $matches);
 
-        //dpm($matches, 'matched line 156');
+          //dpm($matches, 'matched line 156');
         
-        if (count($matches) > 0) {
+          if (count($matches) > 0) {
           
-          foreach ($matches[1] as $value) {
+            foreach ($matches[1] as $value) {
           
-            $new_value = trim(strip_tags($value));
-            $new_value = preg_replace('/\s*-+\s*/', '-', $new_value);
-            $link_nid = array_search($new_value, $existing_nodes);
+              $new_value = trim(strip_tags($value));
+              $new_value = preg_replace('/\s*-+\s*/', '-', $new_value);
+              $link_nid = array_search($new_value, $all_nodes);
 
-            if ($link_nid) {
-              $link_path = 'node/' . $link_nid;
-              $see_also_link = l($value, $link_path, array('html' => TRUE));
-              $update_content['body'] = str_replace($value, $see_also_link, $update_content['body']);
+              if ($link_nid) {
+                $link_path = 'node/' . $link_nid;
+                $see_also_link = l($value, $link_path, array('html' => TRUE));
+                $update_content['body'] = str_replace($value, $see_also_link, $update_content['body']);
 
+                }
+
+              } // foreach ($matches[1] as $value)
+
+            } // count($matches)
+
+            $clean_title = trim(strip_tags($update_content['title']));
+            $crop_pest = preg_split("/\)-/", $clean_title);  // seaparate out the crop name from title
+            $update_content['crop'] = $crop_pest[0] . ')'; 
+            $update_content['pest'] = $crop_pest[1];
+
+            //dpm( debug_backtrace() );
+
+            node_object_prepare($node);
+
+            // set tne new values
+            $node->type = 'subarticle';
+            $node->field_body[LANGUAGE_NONE][0]['value'] = $update_content['body'];
+            $node->field_parent_article_reference[LANGUAGE_NONE][0]['nid'] = $update_content['parentid'];
+            $node->field_styled_title[LANGUAGE_NONE][0]['value'] = trim($update_content['styled_title']);
+            $node->field_styled_title[LANGUAGE_NONE][0]['format'] = 'styled_page_title';
+            $node->field_insect_crop[LANGUAGE_NONE][0]['value'] = trim($update_content['crop']);
+            $node->field_insect_pest[LANGUAGE_NONE][0]['value'] = trim($update_content['pest']);
+
+            $node->revision = 1;
+            
+            $node->log = 'This node was updated via pnw_subarticles module at ' . date('c');
+
+            if ($node = node_submit($node)) {
+              node_save($node);
+              $nid = $node->nid;
+              $title = $node->title;
+              $node_data = $nid . ' - ' . $title;
+              $updated_nodes[] = $node_data;
+            }
+            else {
+              $err[] = $result->nid;
             }
 
-          } // foreach ($matches[1] as $value)
+        } // foreach
 
-        } // count($matches)
-        $croptitle = strip_tags($update_content['title']);
-        $crop = explode('-',$croptitle); // seaparate out the crop name from title
-        $update_content['crop'] = $crop[0]; 
-        $update_content['pest'] = $crop[1]; 
-
-        //dpm( debug_backtrace() );
-
-        node_object_prepare($node);
-
-        // set tne new values
-        $node->type = 'subarticle';
-        $node->field_body[LANGUAGE_NONE][0]['value'] = $update_content['body'];
-        $node->field_parent_article_reference[LANGUAGE_NONE][0]['nid'] = $update_content['parentid'];
-        $node->field_styled_title[LANGUAGE_NONE][0]['value'] = trim($update_content['styled_title']);
-        $node->field_styled_title[LANGUAGE_NONE][0]['format'] = 'styled_page_title';
-        $node->field_insect_crop[LANGUAGE_NONE][0]['value'] = trim($update_content['crop']);
-        $node->field_insect_pest[LANGUAGE_NONE][0]['value'] = trim($update_content['pest']);
-
-        $node->revision = 1;
-        //$node->revision_uid = 1;
-        $node->log = 'This node was updated via pnw_subarticles module at ' . date('c');
-
-        if ($node = node_submit($node)) {
-          node_save($node);
-          $updated_nodes[] = $node->title;
-        }
-        else {
-          $err[] = $result->nid;
-        }
-
-      } // foreach
-
-    } // !empty($update_handbook_data)
+      } // !empty($update_handbook_data)
 
   //} //!empty($existing_nodes)
 
@@ -224,9 +236,10 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
     // Create a new node
     foreach ($new_handbook_data as $new_content) {
 
-      $croptitle = strip_tags($new_content['title']);
-      $crop = explode('-',$croptitle); // seaparate out the crop name from title
-      $new_content['crop'] = $crop[0]; 
+      $clean_title = trim(strip_tags($new_content['title']));
+      $crop_pest = preg_split("/\)-/", $clean_title);  // seaparate out the crop name from title
+      $new_content['crop'] = $crop_pest[0] . ')'; 
+      $new_content['pest'] = $crop_pest[1];
 
       // add see also links if match
       $pattern = '/(?<=<p class="See-also-link">)(.*?)(?=<\/p>)/';
@@ -237,7 +250,7 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
           
           $new_value = trim(strip_tags($value));
           $new_value = preg_replace('/\s*-+\s*/', '-', $new_value);
-          $link_nid = array_search($new_value, $existing_nodes);
+          $link_nid = array_search($new_value, $all_nodes);
           if ($link_nid) {
             $link_path = 'node/' . $link_nid;
             $see_also_link = l($value, $link_path, array('html' => TRUE));
@@ -322,14 +335,12 @@ function split_text($text) {
     if (substr($text, 0, strlen($matches['0'])) != $matches['0']) { //If $text does not start with an <h3>...</h3> tag
       $first_section['title'] = t("Page 1");
       $first_section['body'] = substr($text, 0, strpos($text, $matches['0']));
-      $first_section['parentid'] = $parentid;
       $text = substr($text, strpos($text, $matches['0']));
       $section[] = $first_section;
       $count = 1;
     }
     elseif ($matches['2'] == "") { //If $text starts with <h3></h3>
       $first_section['title'] = "Page 1";
-      $first_section['parentid'] = $parentid;
       $text = substr($text, strlen($matches['0']));
       preg_match('/<h3(.*?)>(.*?)<\/h3>/mi', $text, $matches);
       if (isset($matches['0'])) {
@@ -363,12 +374,12 @@ function split_text($text) {
       $section[] = $new_section;
     endwhile;
 
-  }
+  } //isset($matches['0'])
   else {
     // No matches, send back full text
-    $section['0']['title'] = t("Page 1");
+    drupal_set_message(t('Add Content Error: H3 tag not found in text'));
+    $section['0']['title'] = t('Add Content Error');
     $section['0']['body'] = $text;
-    $section['0']['parentid'] = $parentid;
   }
   return $section;
 }
