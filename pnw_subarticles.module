@@ -192,9 +192,12 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
             } // count($matches)
 
             $clean_title = trim(strip_tags($update_content['title']));
-            $crop_pest = preg_split("/\)-/", $clean_title);  // seaparate out the crop name from title
-            $update_content['crop'] = $crop_pest[0] . ')'; 
-            $update_content['pest'] = $crop_pest[1];
+            $pattern = '/-+[A-Z]/'; // find hyphen followed by Capital letter
+            preg_match($pattern, $clean_title, $match); // returns "-[A-Z]" 
+            $match = str_replace('-', '', $match); // strip hypen to get [A-Z] char to add to pest
+            $crop_pest = preg_split($pattern, $clean_title);  // seaparate out the crop and pest from title
+            $update_content['crop'] = $crop_pest[0]; 
+            $update_content['pest'] = $match[0] . $crop_pest[1]; // add first letter tp pest
 
             //dpm( debug_backtrace() );
 
@@ -237,9 +240,12 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
     foreach ($new_handbook_data as $new_content) {
 
       $clean_title = trim(strip_tags($new_content['title']));
-      $crop_pest = preg_split("/\)-/", $clean_title);  // seaparate out the crop name from title
-      $new_content['crop'] = $crop_pest[0] . ')'; 
-      $new_content['pest'] = $crop_pest[1];
+      $pattern = '/-+[A-Z]/'; // find hyphen followed by Capital letter
+      preg_match($pattern, $clean_title, $match); // returns "-[A-Z]" 
+      $match = str_replace('-', '', $match); // strip hypen to get [A-Z] char to add to pest
+      $crop_pest = preg_split($pattern, $clean_title);  // seaparate out the crop and pest from title
+      $new_content['crop'] = $crop_pest[0]; 
+      $new_content['pest'] = $match[0] . $crop_pest[1]; // add first letter tp pest
 
       // add see also links if match
       $pattern = '/(?<=<p class="See-also-link">)(.*?)(?=<\/p>)/';
@@ -286,10 +292,10 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
 
 
   if (!is_dir('./' . variable_get('file_public_path', conf_path()) . 'update_logs/')) {
-    mkdir('./' . variable_get('file_public_path', conf_path()) . 'update_logs/');
+    mkdir('./' . variable_get('file_public_path', conf_path()) . '/update_logs/');
   }
 
-  $logfile = './' . variable_get('file_public_path', conf_path()) . 'update_logs/' . date('Y-m-d-h-s-a') . '_parentnode_' . $parentid . '_update_log.txt';
+  $logfile = './' . variable_get('file_public_path', conf_path()) . '/update_logs/' . date('Y-m-d-h-s-a') . '_parentnode_' . $parentid . '_update_log.txt';
   $handle = fopen($logfile, "a");
 
   fwrite($handle, "\n\n");
@@ -322,7 +328,7 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
   }
   fclose($handle);
 
-  $message = 'PNW Handbook Sub-article content has been updated. <a target="_blank" href="' . base_path() . variable_get('file_public_path', conf_path()) . 'update_logs/' . date('Y-m-d-h-s-a') . '_parentnode_' . $parentid . '_update_log.txt">View update log</a>.';
+  $message = 'PNW Handbook Sub-article content has been updated. <a target="_blank" href="' . base_path() . variable_get('file_public_path', conf_path()) . '/update_logs/' . date('Y-m-d-h-s-a') . '_parentnode_' . $parentid . '_update_log.txt">View update log</a>.';
   drupal_set_message(filter_xss(t($message)));
 }
 
