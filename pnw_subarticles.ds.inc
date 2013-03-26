@@ -17,23 +17,6 @@ function pnw_subarticles_ds_field_settings_info() {
   $ds_fieldsetting->bundle = 'subarticle';
   $ds_fieldsetting->view_mode = 'default';
   $ds_fieldsetting->settings = array(
-    'styled_title' => array(
-      'weight' => '0',
-      'label' => 'hidden',
-      'format' => 'default',
-      'formatter_settings' => array(
-        'show_title' => 1,
-        'title_wrapper' => 'h2',
-        'ctools' => '',
-        'load_terms' => 0,
-        'ft' => array(),
-      ),
-    ),
-    'title' => array(
-      'weight' => '0',
-      'label' => 'hidden',
-      'format' => 'default',
-    ),
     'links' => array(
       'weight' => '4',
       'label' => 'hidden',
@@ -61,17 +44,13 @@ function pnw_subarticles_ds_layout_settings_info() {
   $ds_layout->settings = array(
     'regions' => array(
       'ds_content' => array(
-        0 => 'title',
-        1 => 'styled_title',
-        2 => 'related_images_related_image',
-        3 => 'field_styled_title',
-        4 => 'field_body',
-        5 => 'links',
+        0 => 'related_images_related_image',
+        1 => 'field_styled_title',
+        2 => 'field_body',
+        3 => 'links',
       ),
     ),
     'fields' => array(
-      'title' => 'ds_content',
-      'styled_title' => 'ds_content',
       'related_images_related_image' => 'ds_content',
       'field_styled_title' => 'ds_content',
       'field_body' => 'ds_content',

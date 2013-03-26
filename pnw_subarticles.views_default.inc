@@ -30,18 +30,44 @@ function pnw_subarticles_views_default_views() {
   $handler->display->display_options['pager']['type'] = 'none';
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['style_options']['grouping'] = array(
+    0 => array(
+      'field' => 'field_insect_crop',
+      'rendered' => 1,
+      'rendered_strip' => 0,
+    ),
+  );
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Content: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
-  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
-  /* Sort criterion: Content: Title */
-  $handler->display->display_options['sorts']['title']['id'] = 'title';
-  $handler->display->display_options['sorts']['title']['table'] = 'node';
-  $handler->display->display_options['sorts']['title']['field'] = 'title';
+  /* Field: Content: Nid */
+  $handler->display->display_options['fields']['nid']['id'] = 'nid';
+  $handler->display->display_options['fields']['nid']['table'] = 'node';
+  $handler->display->display_options['fields']['nid']['field'] = 'nid';
+  $handler->display->display_options['fields']['nid']['label'] = '';
+  $handler->display->display_options['fields']['nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['nid']['element_label_colon'] = FALSE;
+  /* Field: Content: Crop */
+  $handler->display->display_options['fields']['field_insect_crop']['id'] = 'field_insect_crop';
+  $handler->display->display_options['fields']['field_insect_crop']['table'] = 'field_data_field_insect_crop';
+  $handler->display->display_options['fields']['field_insect_crop']['field'] = 'field_insect_crop';
+  $handler->display->display_options['fields']['field_insect_crop']['label'] = '';
+  $handler->display->display_options['fields']['field_insect_crop']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_insect_crop']['element_label_colon'] = FALSE;
+  /* Field: Content: Pest */
+  $handler->display->display_options['fields']['field_insect_pest']['id'] = 'field_insect_pest';
+  $handler->display->display_options['fields']['field_insect_pest']['table'] = 'field_data_field_insect_pest';
+  $handler->display->display_options['fields']['field_insect_pest']['field'] = 'field_insect_pest';
+  $handler->display->display_options['fields']['field_insect_pest']['label'] = '';
+  $handler->display->display_options['fields']['field_insect_pest']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_insect_pest']['alter']['path'] = 'node/[nid]';
+  $handler->display->display_options['fields']['field_insect_pest']['element_label_colon'] = FALSE;
+  /* Sort criterion: Content: Crop (field_insect_crop) */
+  $handler->display->display_options['sorts']['field_insect_crop_value']['id'] = 'field_insect_crop_value';
+  $handler->display->display_options['sorts']['field_insect_crop_value']['table'] = 'field_data_field_insect_crop';
+  $handler->display->display_options['sorts']['field_insect_crop_value']['field'] = 'field_insect_crop_value';
+  /* Sort criterion: Content: Pest (field_insect_pest) */
+  $handler->display->display_options['sorts']['field_insect_pest_value']['id'] = 'field_insect_pest_value';
+  $handler->display->display_options['sorts']['field_insect_pest_value']['table'] = 'field_data_field_insect_pest';
+  $handler->display->display_options['sorts']['field_insect_pest_value']['field'] = 'field_insect_pest_value';
   /* Contextual filter: Content: Parent article reference (field_parent_article_reference) */
   $handler->display->display_options['arguments']['field_parent_article_reference_nid']['id'] = 'field_parent_article_reference_nid';
   $handler->display->display_options['arguments']['field_parent_article_reference_nid']['table'] = 'field_data_field_parent_article_reference';
