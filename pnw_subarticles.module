@@ -295,7 +295,7 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
     mkdir('./' . variable_get('file_public_path', conf_path()) . '/update_logs/');
   }
 
-  $logfile = './' . variable_get('file_public_path', conf_path()) . '/update_logs/' . date('Y-m-d-h-s-a') . '_parentnode_' . $parentid . '_update_log.txt';
+  $logfile = './' . variable_get('file_public_path', conf_path()) . '/update_logs/' . date('c') . '_parentnode_' . $parentid . '_update_log.txt';
   $handle = fopen($logfile, "a");
 
   fwrite($handle, "\n\n");
@@ -328,7 +328,7 @@ function pnw_subarticles_admin_settings_submit($form, &$form_state) {
   }
   fclose($handle);
 
-  $message = 'PNW Handbook Sub-article content has been updated. <a target="_blank" href="' . base_path() . variable_get('file_public_path', conf_path()) . '/update_logs/' . date('Y-m-d-h-s-a') . '_parentnode_' . $parentid . '_update_log.txt">View update log</a>.';
+  $message = 'PNW Handbook Sub-article content has been updated. <a target="_blank" href="' . base_path() . variable_get('file_public_path', conf_path()) . '/update_logs/' . date('c') . '_parentnode_' . $parentid . '_update_log.txt">View update log</a>.';
   drupal_set_message(filter_xss(t($message)));
 }
 
