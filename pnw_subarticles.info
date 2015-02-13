@@ -2,7 +2,6 @@ name = PNW Subarticles
 description = For creating/updating node-referenced subarticles. Also adds "see-also" links
 core = 7.x
 package = PNW
-php = 5.2.4
 version = 7.x-1.2
 project = pnw_subarticles
 dependencies[] = ctools
